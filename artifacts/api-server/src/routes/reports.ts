@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
         username: r.username,
         lat: r.lat,
         lng: r.lng,
-        createdAt: r.createdAt.toISOString(),
+        createdAt: r.createdAt,
       })
     );
     res.json(validated);
@@ -66,7 +66,7 @@ router.post("/", async (req, res) => {
       username: report.username,
       lat: report.lat,
       lng: report.lng,
-      createdAt: report.createdAt.toISOString(),
+      createdAt: report.createdAt,
     });
 
     res.status(201).json(validated);

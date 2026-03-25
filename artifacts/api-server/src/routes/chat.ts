@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
         id: m.id,
         username: m.username,
         message: m.message,
-        createdAt: m.createdAt.toISOString(),
+        createdAt: m.createdAt,
       })
     );
     res.json(validated);
@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
       id: message.id,
       username: message.username,
       message: message.message,
-      createdAt: message.createdAt.toISOString(),
+      createdAt: message.createdAt,
     });
 
     res.status(201).json(validated);
