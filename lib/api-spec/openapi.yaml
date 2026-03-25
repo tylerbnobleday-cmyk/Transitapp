@@ -1,15 +1,18 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Transit Alert API - Melbourne fare inspector reporting
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: reports
+    description: Inspector sighting reports
+  - name: chat
+    description: Alert Talk community chat
 paths:
   /healthz:
     get:
@@ -24,6 +27,89 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /reports:
+    get:
+      operationId: getReports
+      tags: [reports]
+      summary: Get all reports
+      description: Returns all recent inspector sighting reports
+      responses:
+        "200":
+          description: List of reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Report"
+    post:
+      operationId: createReport
+      tags: [reports]
+      summary: Create a report
+      description: Submit a new inspector sighting report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReportInput"
+      responses:
+        "201":
+          description: Report created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+
+  /reports/stats:
+    get:
+      operationId: getReportStats
+      tags: [reports]
+      summary: Get report statistics
+      description: Returns today's alert count and risky routes
+      responses:
+        "200":
+          description: Report statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportStats"
+
+  /chat:
+    get:
+      operationId: getChatMessages
+      tags: [chat]
+      summary: Get chat messages
+      description: Returns recent Alert Talk chat messages
+      responses:
+        "200":
+          description: List of chat messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+    post:
+      operationId: sendChatMessage
+      tags: [chat]
+      summary: Send a chat message
+      description: Post a message to Alert Talk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateChatMessageInput"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessage"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +120,148 @@ components:
       required:
         - status
 
+    Report:
+      type: object
+      properties:
+        id:
+          type: integer
+        reportType:
+          type: string
+          enum: [inspector, delay, incident]
+        transportType:
+          type: string
+          enum: [tram, train, bus, stop]
+        lineNumber:
+          type: string
+          nullable: true
+        direction:
+          type: string
+          enum: [city_bound, outbound, unknown]
+          nullable: true
+        locationName:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        username:
+          type: string
+        lat:
+          type: number
+          format: double
+          nullable: true
+        lng:
+          type: number
+          format: double
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - reportType
+        - transportType
+        - lineNumber
+        - direction
+        - locationName
+        - notes
+        - username
+        - lat
+        - lng
+        - createdAt
+
+    CreateReportInput:
+      type: object
+      properties:
+        reportType:
+          type: string
+          enum: [inspector, delay, incident]
+        transportType:
+          type: string
+          enum: [tram, train, bus, stop]
+        lineNumber:
+          type: string
+          nullable: true
+        direction:
+          type: string
+          enum: [city_bound, outbound, unknown]
+          nullable: true
+        locationName:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        username:
+          type: string
+        lat:
+          type: number
+          format: double
+          nullable: true
+        lng:
+          type: number
+          format: double
+          nullable: true
+      required:
+        - reportType
+        - transportType
+        - locationName
+        - username
+
+    ReportStats:
+      type: object
+      properties:
+        alertsToday:
+          type: integer
+        riskyRoutes:
+          type: array
+          items:
+            $ref: "#/components/schemas/RiskyRoute"
+      required:
+        - alertsToday
+        - riskyRoutes
+
+    RiskyRoute:
+      type: object
+      properties:
+        lineNumber:
+          type: string
+        transportType:
+          type: string
+        reportCount:
+          type: integer
+        riskLevel:
+          type: string
+          enum: [low, medium, high]
+      required:
+        - lineNumber
+        - transportType
+        - reportCount
+        - riskLevel
+
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        message:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - username
+        - message
+        - createdAt
+
+    CreateChatMessageInput:
+      type: object
+      properties:
+        username:
+          type: string
+        message:
+          type: string
+      required:
+        - username
+        - message

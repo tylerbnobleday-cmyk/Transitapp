@@ -1,0 +1,19 @@
+packages:
+  "leaflet": "Interactive map core"
+  "react-leaflet": "React bindings for Leaflet"
+  "@types/leaflet": "Types for leaflet"
+  "framer-motion": "Smooth animations for bottom sheet and side panels"
+  "date-fns": "Human readable timestamps for chat and reports"
+  "lucide-react": "Icons"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility function to efficiently merge Tailwind CSS classes"
+
+images:
+  - path: "artifacts/transit-alert/public/images/app-logo.png"
+    description: "A sleek, minimal, glowing neon outline of a tram or train on a pure black background. Cyberpunk urban transit vibe."
+    aspect_ratio: "1:1"
+
+notes:
+  - Map requires leaflet.css to be loaded.
+  - Assuming API endpoints respond correctly according to the OpenAPI spec.
+  - Orval generated hooks are used from `@workspace/api-client-react`.
