@@ -7,6 +7,9 @@
  */
 
 export * from "./chatMessage";
+export * from "./consistStatus";
+export * from "./consistStatusCurrentTrip";
+export * from "./consistStatusNextTrip";
 export * from "./createChatMessageInput";
 export * from "./createReportInput";
 export * from "./createReportInputDirection";
@@ -20,3 +23,5 @@ export * from "./reportStats";
 export * from "./reportTransportType";
 export * from "./riskyRoute";
 export * from "./riskyRouteRiskLevel";
+export * from "./telegramStatus";
+export * from "./tripStop";

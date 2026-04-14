@@ -86,3 +86,64 @@ export const SendChatMessageBody = zod.object({
   username: zod.string(),
   message: zod.string(),
 });
+
+/**
+ * Returns the status and username of the Telegram bot
+ * @summary Get Telegram bot status
+ */
+export const GetTelegramStatusResponse = zod.object({
+  connected: zod.boolean(),
+  username: zod.string().nullish(),
+  firstName: zod.string().nullish(),
+});
+
+/**
+ * Returns tracking data for a specific train consist
+ * @summary Get consist status
+ */
+export const GetConsistStatusParams = zod.object({
+  consist: zod.coerce.string(),
+});
+
+export const getConsistStatusResponseCurrentTripEstimatedPosMin = 2;
+export const getConsistStatusResponseCurrentTripEstimatedPosMax = 2;
+
+export const GetConsistStatusResponse = zod.object({
+  consist: zod.string(),
+  active: zod.boolean(),
+  currentTrip: zod
+    .object({
+      id: zod.string().optional(),
+      route: zod.string().optional(),
+      destination: zod.string().optional(),
+      progress: zod.number().optional(),
+      estimatedPos: zod
+        .array(zod.number())
+        .min(getConsistStatusResponseCurrentTripEstimatedPosMin)
+        .max(getConsistStatusResponseCurrentTripEstimatedPosMax)
+        .optional(),
+    })
+    .nullish(),
+  nextTrip: zod
+    .object({
+      id: zod.string().optional(),
+      departureTime: zod.string().optional(),
+    })
+    .nullish(),
+  alerts: zod.array(zod.string()),
+});
+
+/**
+ * Returns the list of stops for the current trip
+ * @summary Get consist trip stops
+ */
+export const GetConsistStopsParams = zod.object({
+  consist: zod.coerce.string(),
+});
+
+export const GetConsistStopsResponseItem = zod.object({
+  station: zod.string(),
+  arrivalTime: zod.string(),
+  departureTime: zod.string(),
+});
+export const GetConsistStopsResponse = zod.array(GetConsistStopsResponseItem);

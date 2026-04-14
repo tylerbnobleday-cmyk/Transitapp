@@ -3,8 +3,10 @@ import { db } from "@workspace/db";
 import { reportsTable } from "@workspace/db/schema";
 import { CreateReportBody, GetReportsResponseItem, GetReportStatsResponse } from "@workspace/api-zod";
 import { desc, gte, sql } from "drizzle-orm";
+import { notifyTelegram } from "../lib/telegram";
 
 const router: IRouter = Router();
+// ... (keep the rest of the file)
 
 router.get("/", async (req, res) => {
   try {
@@ -67,6 +69,18 @@ router.post("/", async (req, res) => {
       lat: report.lat,
       lng: report.lng,
       createdAt: report.createdAt,
+    });
+
+    // Notify Telegram channel
+    const message = `🚨 *New Transit Report* 🚨\n\n` +
+      `*Type:* ${validated.reportType}\n` +
+      `*Transport:* ${validated.transportType}${validated.lineNumber ? ` (Line ${validated.lineNumber})` : ""}\n` +
+      `*Location:* ${validated.locationName}\n` +
+      `${validated.notes ? `*Notes:* ${validated.notes}\n` : ""}` +
+      `*User:* ${validated.username}`;
+    
+    notifyTelegram(message).catch(err => {
+      req.log.error({ err }, "Failed to notify Telegram from reports route");
     });
 
     res.status(201).json(validated);

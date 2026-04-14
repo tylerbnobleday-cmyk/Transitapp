@@ -1,5 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { bot } from "./lib/telegram";
 
 const rawPort = process.env["PORT"];
 
@@ -13,6 +14,21 @@ const port = Number(rawPort);
 
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
+}
+
+// Start the Telegram bot if it's configured
+if (bot) {
+  bot.launch()
+    .then(() => {
+      logger.info("Telegram bot launched successfully");
+    })
+    .catch((err) => {
+      logger.error({ err }, "Failed to launch Telegram bot");
+    });
+
+  // Enable graceful stop
+  process.once("SIGINT", () => bot.stop("SIGINT"));
+  process.once("SIGTERM", () => bot.stop("SIGTERM"));
 }
 
 app.listen(port, (err) => {

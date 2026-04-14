@@ -18,11 +18,14 @@ import type {
 
 import type {
   ChatMessage,
+  ConsistStatus,
   CreateChatMessageInput,
   CreateReportInput,
   HealthStatus,
   Report,
   ReportStats,
+  TelegramStatus,
+  TripStop,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -509,3 +512,257 @@ export const useSendChatMessage = <
 > => {
   return useMutation(getSendChatMessageMutationOptions(options));
 };
+
+/**
+ * Returns the status and username of the Telegram bot
+ * @summary Get Telegram bot status
+ */
+export const getGetTelegramStatusUrl = () => {
+  return `/api/telegram/status`;
+};
+
+export const getTelegramStatus = async (
+  options?: RequestInit,
+): Promise<TelegramStatus> => {
+  return customFetch<TelegramStatus>(getGetTelegramStatusUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetTelegramStatusQueryKey = () => {
+  return [`/api/telegram/status`] as const;
+};
+
+export const getGetTelegramStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getTelegramStatus>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getTelegramStatus>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetTelegramStatusQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getTelegramStatus>>
+  > = ({ signal }) => getTelegramStatus({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getTelegramStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetTelegramStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getTelegramStatus>>
+>;
+export type GetTelegramStatusQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get Telegram bot status
+ */
+
+export function useGetTelegramStatus<
+  TData = Awaited<ReturnType<typeof getTelegramStatus>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getTelegramStatus>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetTelegramStatusQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * Returns tracking data for a specific train consist
+ * @summary Get consist status
+ */
+export const getGetConsistStatusUrl = (consist: string) => {
+  return `/api/consist/${consist}`;
+};
+
+export const getConsistStatus = async (
+  consist: string,
+  options?: RequestInit,
+): Promise<ConsistStatus> => {
+  return customFetch<ConsistStatus>(getGetConsistStatusUrl(consist), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetConsistStatusQueryKey = (consist: string) => {
+  return [`/api/consist/${consist}`] as const;
+};
+
+export const getGetConsistStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getConsistStatus>>,
+  TError = ErrorType<unknown>,
+>(
+  consist: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getConsistStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetConsistStatusQueryKey(consist);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getConsistStatus>>
+  > = ({ signal }) => getConsistStatus(consist, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!consist,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getConsistStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetConsistStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getConsistStatus>>
+>;
+export type GetConsistStatusQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get consist status
+ */
+
+export function useGetConsistStatus<
+  TData = Awaited<ReturnType<typeof getConsistStatus>>,
+  TError = ErrorType<unknown>,
+>(
+  consist: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getConsistStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetConsistStatusQueryOptions(consist, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * Returns the list of stops for the current trip
+ * @summary Get consist trip stops
+ */
+export const getGetConsistStopsUrl = (consist: string) => {
+  return `/api/consist/${consist}/stops`;
+};
+
+export const getConsistStops = async (
+  consist: string,
+  options?: RequestInit,
+): Promise<TripStop[]> => {
+  return customFetch<TripStop[]>(getGetConsistStopsUrl(consist), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetConsistStopsQueryKey = (consist: string) => {
+  return [`/api/consist/${consist}/stops`] as const;
+};
+
+export const getGetConsistStopsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getConsistStops>>,
+  TError = ErrorType<unknown>,
+>(
+  consist: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getConsistStops>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetConsistStopsQueryKey(consist);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getConsistStops>>> = ({
+    signal,
+  }) => getConsistStops(consist, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!consist,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getConsistStops>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetConsistStopsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getConsistStops>>
+>;
+export type GetConsistStopsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get consist trip stops
+ */
+
+export function useGetConsistStops<
+  TData = Awaited<ReturnType<typeof getConsistStops>>,
+  TError = ErrorType<unknown>,
+>(
+  consist: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getConsistStops>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetConsistStopsQueryOptions(consist, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}

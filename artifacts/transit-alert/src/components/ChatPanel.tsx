@@ -16,9 +16,11 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
   const [message, setMessage] = useState("");
   const [username] = useState("User_" + Math.floor(Math.random() * 9999));
 
-  const { data: messages = [] } = useGetChatMessages({
+  const { data } = useGetChatMessages({
     query: { refetchInterval: 10000 }
   });
+
+  const messages = Array.isArray(data) ? data : [];
 
   const { mutate: sendMessage, isPending } = useSendChatMessage({
     mutation: {

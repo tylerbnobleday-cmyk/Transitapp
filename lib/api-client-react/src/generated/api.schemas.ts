@@ -5,6 +5,43 @@
  * Transit Alert API - Melbourne fare inspector reporting
  * OpenAPI spec version: 0.1.0
  */
+export type ConsistStatusCurrentTrip = {
+  id?: string;
+  route?: string;
+  destination?: string;
+  progress?: number;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  estimatedPos?: number[];
+} | null;
+
+export type ConsistStatusNextTrip = {
+  id?: string;
+  departureTime?: string;
+} | null;
+
+export interface ConsistStatus {
+  consist: string;
+  active: boolean;
+  currentTrip?: ConsistStatusCurrentTrip;
+  nextTrip?: ConsistStatusNextTrip;
+  alerts: string[];
+}
+
+export interface TripStop {
+  station: string;
+  arrivalTime: string;
+  departureTime: string;
+}
+
+export interface TelegramStatus {
+  connected: boolean;
+  username?: string | null;
+  firstName?: string | null;
+}
+
 export interface HealthStatus {
   status: string;
 }

@@ -110,8 +110,132 @@ paths:
               schema:
                 $ref: "#/components/schemas/ChatMessage"
 
+  /telegram/status:
+    get:
+      operationId: getTelegramStatus
+      tags: [telegram]
+      summary: Get Telegram bot status
+      description: Returns the status and username of the Telegram bot
+      responses:
+        "200":
+          description: Bot status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelegramStatus"
+
+  /consist/{consist}:
+    get:
+      operationId: getConsistStatus
+      tags: [consist]
+      summary: Get consist status
+      description: Returns tracking data for a specific train consist
+      parameters:
+        - name: consist
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Consist status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsistStatus"
+
+  /consist/{consist}/stops:
+    get:
+      operationId: getConsistStops
+      tags: [consist]
+      summary: Get consist trip stops
+      description: Returns the list of stops for the current trip
+      parameters:
+        - name: consist
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of stops
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TripStop"
+
 components:
   schemas:
+    ConsistStatus:
+      type: object
+      properties:
+        consist:
+          type: string
+        active:
+          type: boolean
+        currentTrip:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+            route:
+              type: string
+            destination:
+              type: string
+            progress:
+              type: number
+            estimatedPos:
+              type: array
+              items:
+                type: number
+              minItems: 2
+              maxItems: 2
+        nextTrip:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+            departureTime:
+              type: string
+        alerts:
+          type: array
+          items:
+            type: string
+      required:
+        - consist
+        - active
+        - alerts
+
+    TripStop:
+      type: object
+      properties:
+        station:
+          type: string
+        arrivalTime:
+          type: string
+        departureTime:
+          type: string
+      required:
+        - station
+        - arrivalTime
+        - departureTime
+    TelegramStatus:
+      type: object
+      properties:
+        connected:
+          type: boolean
+        username:
+          type: string
+          nullable: true
+        firstName:
+          type: string
+          nullable: true
+      required:
+        - connected
     HealthStatus:
       type: object
       properties:
